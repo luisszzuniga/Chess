@@ -1,0 +1,46 @@
+body
+{
+    padding: 0;
+    margin: 0;
+}
+
+#grille
+{
+    width: 800px;
+    height: 800px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.caseblanc
+{
+    background-color: white;
+    width: 100px;
+    height: 100px;
+}
+
+.casenoir
+{
+    background-color: darkgoldenrod;
+    width: 100px;
+    height: 100px;
+}
+
+img
+{
+    width: 100%;
+}
+
+.dot
+{
+    width: 40px;
+    margin: auto;
+    display: block;
+    margin-top: 50%;
+    transform: translateY(-50%);
+}
+
+.greenBg
+{
+    background-color: green;
+}
