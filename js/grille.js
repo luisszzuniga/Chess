@@ -42,8 +42,6 @@ class Echiquier {
         this.grille[62] = new Cavalier("CAVALIER", "blanc");
         this.grille[63] = new Tour("TOUR", "blanc");
 
-        console.log(this.grille);
-
 
         this.tab120 = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -129,10 +127,6 @@ class Echiquier {
     }
 
 
-    roiEnEchec() {
-
-    }
-
     select(elem) {
         if(this.selected == "") {
             if(this.grille[elem.id].nom !== undefined) {
@@ -147,17 +141,18 @@ class Echiquier {
         }
     }
 
+
+
     move(depart, arrive) {
         if(this.grille[depart].couleur == this.tour) {
 
-            if(this.grille[depart].check(depart, arrive) == true) {
+            if(this.grille[depart].check(depart, arrive, this.grille) && this.grille[depart].roiSafe(depart, arrive)) {
                 if(this.grille[arrive].nom !== "") {
                     if(this.grille[arrive].couleur !== this.grille[depart].couleur){
                         this.grille[arrive] = new Pion();
                         var temp = this.grille[arrive];
                         this.grille[arrive] = this.grille[depart];
                         this.grille[depart] = temp;
-                        console.log(arrive);
                         this.tourSuivant();
                     }
                 }
@@ -165,12 +160,10 @@ class Echiquier {
                     var temp = this.grille[arrive];
                     this.grille[arrive] = this.grille[depart];
                     this.grille[depart] = temp;
-                    console.log(arrive);
                     this.tourSuivant();
                 }
                 this.update();
                 this.grille[arrive].tourJouer++;
-                
             }
 
             
@@ -178,8 +171,8 @@ class Echiquier {
         
     }
 
+
 }
 
 var echecs = new Echiquier();
 echecs.update();
-

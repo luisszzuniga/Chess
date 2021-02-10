@@ -4,6 +4,41 @@ class Pion {
         this.couleur = couleur;
         this.tourJouer = 1;
     }
+
+    roiSafe(depart, arrive) {
+        var tempGrille = [];
+        for(var i = 0; i <= 63; i++) {
+            tempGrille[i] = echecs.grille[i];
+        }
+
+        if(tempGrille[arrive].nom) {
+            tempGrille[arrive] = tempGrille[depart];
+            tempGrille[depart] = new Pion();
+        }
+        else {
+            var temp = tempGrille[arrive];
+            tempGrille[arrive] = tempGrille[depart];
+            tempGrille[depart] = temp;  
+        }
+
+        var posRoi;
+        for(var i = 0; i <= 63; i++) {
+            if(tempGrille[i] && tempGrille[i].nom && tempGrille[i].couleur && tempGrille[i].nom == "ROI" && tempGrille[i].couleur == echecs.tour) {
+                posRoi = i;
+            }
+        }
+
+        for(i = 0; i <= 63; i++) {
+            if(tempGrille[i] && tempGrille[i].couleur && tempGrille[i].couleur != echecs.tour) {
+                if (tempGrille[i].check(i, posRoi, tempGrille)) {
+                    alert('Roi ' + echecs.tour + ' en échec !');
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
 
 class Tour extends Pion {
@@ -18,7 +53,29 @@ class Tour extends Pion {
         }
     }
 
-    check(depart, arrive) {
+    check(depart, arrive, grille) {
+        this.deplacementsPossibles = [];
+        for(var i of this.deplacements) {
+            for(var n = 1; n <= 8; n++) {
+                var test = echecs.tab120[echecs.tab64[depart] + i * n];
+                if (test != -1) {
+                    this.deplacementsPossibles.push(test);
+                    if(grille[echecs.tab120[echecs.tab64[depart] + i *n]]) {
+                        if(grille[echecs.tab120[echecs.tab64[depart] + i *n]].nom) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        var valable = this.deplacementsPossibles.find(element => element == arrive);
+
+        if (valable != undefined) {
+            return true;
+        }
+    }
+
+    getDeplacements(depart) {
         this.deplacementsPossibles = [];
         for(var i of this.deplacements) {
             for(var n = 1; n <= 8; n++) {
@@ -33,11 +90,9 @@ class Tour extends Pion {
                 }
             }
         }
-        var valable = this.deplacementsPossibles.find(element => element == arrive);
-        console.log(valable);
 
-        if (valable != undefined) {
-            return true;
+        if(this.deplacementsPossibles) {
+            return this.deplacementsPossibles;
         }
     }
 }
@@ -54,7 +109,29 @@ class Fou extends Pion {
         }
     }
 
-    check(depart, arrive) {
+    check(depart, arrive, grille) {
+        this.deplacementsPossibles = [];
+        for(var i of this.deplacements) {
+            for(var n = 1; n <= 8; n++) {
+                var test = echecs.tab120[echecs.tab64[depart] + i * n];
+                if (test != -1) {
+                    this.deplacementsPossibles.push(test);
+                    if(grille[echecs.tab120[echecs.tab64[depart] + i *n]]) {
+                        if(grille[echecs.tab120[echecs.tab64[depart] + i *n]].nom) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        var valable = this.deplacementsPossibles.find(element => element == arrive);
+
+        if (valable != undefined) {
+            return true;
+        }
+    }
+
+    getDeplacements(depart) {
         this.deplacementsPossibles = [];
         for(var i of this.deplacements) {
             for(var n = 1; n <= 8; n++) {
@@ -69,11 +146,9 @@ class Fou extends Pion {
                 }
             }
         }
-        var valable = this.deplacementsPossibles.find(element => element == arrive);
-        console.log(valable);
 
-        if (valable != undefined) {
-            return true;
+        if(this.deplacementsPossibles) {
+            return this.deplacementsPossibles;
         }
     }
 }
@@ -90,21 +165,34 @@ class Cavalier extends Pion {
         }
     }
 
-    check(depart, arrive) {
+    check(depart, arrive, grille) {
         this.deplacementsPossibles = [];
         for(var i of this.deplacements) {
-            for(var n = 1; n <= 8; n++) {
-                var test = echecs.tab120[echecs.tab64[depart] + i * n];
-                if (test != -1) {
-                    this.deplacementsPossibles.push(test);
-                }
+            var test = echecs.tab120[echecs.tab64[depart] + i];
+            if (test != -1) {
+                this.deplacementsPossibles.push(test);
             }
+            
         }
         var valable = this.deplacementsPossibles.find(element => element == arrive);
-        console.log(valable);
 
         if (valable != undefined) {
             return true;
+        }
+    }
+
+    getDeplacements(depart) {
+        this.deplacementsPossibles = [];
+        for(var i of this.deplacements) {
+            var test = echecs.tab120[echecs.tab64[depart] + i];
+            if (test != -1) {
+                this.deplacementsPossibles.push(test);
+            }
+            
+        }
+
+        if(this.deplacementsPossibles) {
+            return this.deplacementsPossibles;
         }
     }
 }
@@ -121,7 +209,8 @@ class Roi extends Pion {
         }
     }
 
-    check(depart, arrive) {
+    check(depart, arrive, grille) {
+        
         this.deplacementsPossibles = [];
         for(var i of this.deplacements) {
             var test = echecs.tab120[echecs.tab64[depart] + i];
@@ -130,10 +219,23 @@ class Roi extends Pion {
             }
         }
         var valable = this.deplacementsPossibles.find(element => element == arrive);
-        console.log(valable);
 
-        if (valable != undefined) {
+        if (valable) {
             return true;
+        }
+    }
+
+    getDeplacements(depart) {
+        this.deplacementsPossibles = [];
+        for(var i of this.deplacements) {
+            var test = echecs.tab120[echecs.tab64[depart] + i];
+            if (test != -1) {
+                this.deplacementsPossibles.push(test);
+            }
+        }
+
+        if(this.deplacementsPossibles) {
+            return this.deplacementsPossibles;
         }
     }
 }
@@ -150,7 +252,29 @@ class Reine extends Pion {
         }
     }
 
-    check(depart, arrive) {
+    check(depart, arrive, grille) {
+        this.deplacementsPossibles = [];
+        for(var i of this.deplacements) {
+            for(var n = 1; n <= 8; n++) {
+                var test = echecs.tab120[echecs.tab64[depart] + i * n];
+                if (test != -1) {
+                    this.deplacementsPossibles.push(test);
+                    if(grille[echecs.tab120[echecs.tab64[depart] + i *n]]) {
+                        if(grille[echecs.tab120[echecs.tab64[depart] + i *n]].nom) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        var valable = this.deplacementsPossibles.find(element => element == arrive);
+
+        if (valable != undefined) {
+            return true;
+        }
+    }
+
+    getDeplacements(depart) {
         this.deplacementsPossibles = [];
         for(var i of this.deplacements) {
             for(var n = 1; n <= 8; n++) {
@@ -165,11 +289,8 @@ class Reine extends Pion {
                 }
             }
         }
-        var valable = this.deplacementsPossibles.find(element => element == arrive);
-        console.log(valable);
-
-        if (valable != undefined) {
-            return true;
+        if(this.deplacementsPossibles) {
+            return this.deplacementsPossibles;
         }
     }
 }
@@ -189,7 +310,7 @@ class Soldat extends Pion {
         }
     }
 
-    check(depart, arrive) {
+    check(depart, arrive, grille) {
         this.deplacementsPossibles = [];
         this.longueurDeplacement = 2;
         if(this.tourJouer > 1) {
@@ -200,8 +321,8 @@ class Soldat extends Pion {
                 var test = echecs.tab120[echecs.tab64[depart] + i * n];
                 if (test != -1) {
                     
-                    if(echecs.grille[echecs.tab120[echecs.tab64[depart] + i *n]]) {
-                        if(echecs.grille[echecs.tab120[echecs.tab64[depart] + i *n]].nom) {
+                    if(grille[echecs.tab120[echecs.tab64[depart] + i *n]]) {
+                        if(grille[echecs.tab120[echecs.tab64[depart] + i *n]].nom) {
                             break;
                         }
                     }
@@ -213,17 +334,37 @@ class Soldat extends Pion {
         for(var i of this.kills) {
             var test = echecs.tab120[echecs.tab64[depart] + i];
             if (test != -1) {
-                if(echecs.grille[echecs.tab120[echecs.tab64[depart] + i]].nom) {
+                if(grille[echecs.tab120[echecs.tab64[depart] + i]] && grille[echecs.tab120[echecs.tab64[depart] + i]].nom) {
                     this.deplacementsPossibles.push(test);
                 }
             }
         }
 
+        
+
         var valable = this.deplacementsPossibles.find(element => element == arrive);
-        console.log(valable);
 
         if (valable != undefined) {
             return true;
         }
     }
+
+    getDeplacements(depart) {
+        this.killsPossibles = [];
+
+        for(var i of this.kills) {
+            var test = echecs.tab120[echecs.tab64[depart] + i];
+            if (test != -1) {
+                if(echecs.grille[echecs.tab120[echecs.tab64[depart] + i]] && echecs.grille[echecs.tab120[echecs.tab64[depart] + i]].nom) {
+                    this.killsPossibles.push(test);
+                }
+            }
+        }
+
+        if(this.killsPossibles) {
+            return this.killsPossibles;
+        }
+    }
 }
+
+
